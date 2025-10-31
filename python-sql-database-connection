@@ -1,0 +1,76 @@
+import pandas as pd
+from sqlalchemy import create_engine
+from tqdm import tqdm
+import warnings
+
+warnings.filterwarnings('ignore', category=UserWarning, module='pandas')
+
+DATABASE_URI = ''
+
+#OUTPUT_FILE_NAME = 'tum_iller_restoran_eslesmeleri_V2.xlsx'
+
+# --- 81 il ---
+iller = [
+]
+
+# --- sql sorgusu ---
+# '{city}'
+sql_template_v2 = r"""
+#SQL query
+"""
+
+
+# --- 4. Ana fonksiyon
+def main():
+    """
+    """
+    try:
+        engine = create_engine(DATABASE_URI)
+        print("Veritabanına bağlandı")
+    except Exception as e:
+        print(f"Veritabanı bağlantısı kurulamadı. Hata: {e}")
+        print("database URI")
+        return
+
+    all_cities_results = []
+
+    # tqdm ilerleme çubuğu
+    for city in tqdm(iller, desc="İller işleniyor"):
+        try:
+
+            safe_city_name = city.replace("'", "''")
+            query = sql_template_v2.format(city=safe_city_name)
+
+            # dataframe'e aktar
+            df_city = pd.read_sql_query(query, engine)
+
+            # hangi şehir
+            if not df_city.empty:
+                df_city['sorgulanan_sehir'] = city
+
+            all_cities_results.append(df_city)
+
+        except Exception as e:
+            print(f"\n  sorguda hata: {e}")
+            print("   bu kısım atlandı")
+
+    if not any(not df.empty for df in all_cities_results):
+        print("\nveri bulunamadı")
+        return
+
+    # şehirleri dataframede birleştirme
+    print("\ntüm şehirlerin verileri")
+    final_df = pd.concat([df for df in all_cities_results if not df.empty], ignore_index=True)
+
+    # excel dosyası
+    print(f"Sonuçlar '{OUTPUT_FILE_NAME}' dosyasına kaydediliyor...")
+    try:
+        final_df.to_excel(OUTPUT_FILE_NAME, index=False)
+        print(
+            f"\n sorgu tamamlandı")
+    except Exception as e:
+        print(f"\nhata mesajı: {e}")
+
+
+if __name__ == "__main__":
+    main()
