@@ -7,7 +7,7 @@ warnings.filterwarnings('ignore', category=UserWarning, module='pandas')
 
 DATABASE_URI = ''
 
-#OUTPUT_FILE_NAME = 'tum_iller_restoran_eslesmeleri_V2.xlsx'
+#OUTPUT_FILE_NAME = 'v2.xlsx'
 
 # --- 81 il ---
 iller = [
